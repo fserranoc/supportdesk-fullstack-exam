@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "SupportDesk API",
+    "description": "Colección local con los siete endpoints del examen. Todos los datos son ficticios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5080/api" },
+    { "key": "ticketId", "value": "40000000-0000-0000-0000-000000000001" },
+    { "key": "currentUser", "value": "user@example.test" }
+  ],
+  "auth": { "type": "noauth" },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": ["pm.request.headers.upsert({ key: 'X-User', value: pm.collectionVariables.get('currentUser') });"]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Listar tickets",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tickets?status=Open&priority=High&q=portal&page=1&pageSize=20&sortBy=createdAt&sortDirection=desc"
+      }
+    },
+    {
+      "name": "Obtener ticket",
+      "request": { "method": "GET", "url": "{{baseUrl}}/tickets/{{ticketId}}" }
+    },
+    {
+      "name": "Crear ticket",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Error al acceder al portal\",\n  \"description\": \"El usuario recibe un error al iniciar sesión en el portal corporativo.\",\n  \"priority\": \"High\"\n}"
+        },
+        "url": "{{baseUrl}}/tickets"
+      }
+    },
+    {
+      "name": "Actualizar ticket",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Error recurrente al acceder al portal\",\n  \"description\": \"El problema continúa después de aplicar las acciones iniciales.\",\n  \"priority\": \"Critical\"\n}"
+        },
+        "url": "{{baseUrl}}/tickets/{{ticketId}}"
+      }
+    },
+    {
+      "name": "Cambiar estado",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"InProgress\"\n}" },
+        "url": "{{baseUrl}}/tickets/{{ticketId}}/status"
+      }
+    },
+    {
+      "name": "Agregar comentario",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Se inició el análisis del incidente.\"\n}" },
+        "url": "{{baseUrl}}/tickets/{{ticketId}}/comments"
+      }
+    },
+    {
+      "name": "Listar comentarios",
+      "request": { "method": "GET", "url": "{{baseUrl}}/tickets/{{ticketId}}/comments" }
+    }
+  ]
+}
